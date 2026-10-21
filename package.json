@@ -1,0 +1,32 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend de Cuba Platform",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "leaflet-defaulticon-compatibility": "^0.1.2",
+    "lucide-react": "^1.53.0",
+    "next": "^14.2.31",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.7.0",
+    "react-leaflet": "^4.2.1",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.6.1",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5"
+  }
+}

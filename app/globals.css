@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    background-color: #FFFFFF;
+    color: #1A3A3A;
+  }
+  
+  h1, h2, h3, h4 {
+    font-family: var(--font-fraunces), serif;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition-colors;
+  }
+  
+  .btn-accent {
+    @apply bg-accent-coral text-white px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary text-primary px-6 py-3 rounded-lg font-semibold hover:bg-primary hover:text-white transition-colors;
+  }
+}
