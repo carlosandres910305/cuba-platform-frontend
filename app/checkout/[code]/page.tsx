@@ -431,7 +431,7 @@ export default function CheckoutPage() {
 
                 <button
                   onClick={handleSubmit}
-                  disabled={submitting || !user || kycPending}
+                  disabled={submitting || !user ||!! kycPending}
                   className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {submitting
