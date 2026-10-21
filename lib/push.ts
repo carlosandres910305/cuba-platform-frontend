@@ -11,7 +11,7 @@ import { useState, useEffect } from 'react';
 import { apiFetch, apiPublic } from './api';
 
 // Convertir la clave VAPID de base64 a Uint8Array
-function urlBase64ToUint8Array(base64String: string): Uint8Array {
+function urlBase64ToUint8Array(base64String: string): Uint8Array  {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
@@ -128,7 +128,7 @@ export function usePushNotifications() {
       // 4. Suscribirse al push
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
+        applicationServerKey: urlBase64ToUint8Array(publicKey) as any,
       });
 
       // 5. Enviar la suscripción al backend
