@@ -4,17 +4,15 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useAuth, getRedirectByRole } from '@/lib/auth';
 import { useLanguage } from '@/lib/language';
-import { Suspense } from 'react';
 
-
-export default function LoginContent() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -145,7 +143,13 @@ export default function LoginContent() {
       <Footer />
     </>
   );
-
-  
 }
 
+// AQUÍ ESTÁ LA MAGIA: Envolvemos el contenido en Suspense para que Next.js lo acepte
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}

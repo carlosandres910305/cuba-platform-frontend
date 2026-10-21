@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, CheckCircle, XCircle } from 'lucide-react';
@@ -12,9 +12,8 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { apiFetch } from '@/lib/api';
 import { useLanguage } from '@/lib/language';
-import { Suspense } from 'react';
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
@@ -159,5 +158,14 @@ export default function ResetPasswordPage() {
 
       <Footer />
     </>
+  );
+}
+
+// Envoltorio de Suspense para solucionar el error de prerender
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Cargando...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
