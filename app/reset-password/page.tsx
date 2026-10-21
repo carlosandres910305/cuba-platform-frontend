@@ -12,6 +12,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { apiFetch } from '@/lib/api';
 import { useLanguage } from '@/lib/language';
+import { Suspense } from 'react';
 
 export default function ResetPasswordPage() {
   const router = useRouter();

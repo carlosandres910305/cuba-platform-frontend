@@ -11,8 +11,10 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useAuth, getRedirectByRole } from '@/lib/auth';
 import { useLanguage } from '@/lib/language';
+import { Suspense } from 'react';
 
-export default function LoginPage() {
+
+export default function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
@@ -143,4 +145,7 @@ export default function LoginPage() {
       <Footer />
     </>
   );
+
+  
 }
+
