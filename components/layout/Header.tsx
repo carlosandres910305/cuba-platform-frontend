@@ -4,7 +4,7 @@
 // Header global con:
 // - Logo
 // - Navegación
-// - Selectores de idioma y moneda
+// - Selector de idioma
 // - Estado de autenticación (login/registro o cuenta/logout)
 // - Notificaciones (campana)
 // ============================================================
@@ -21,7 +21,6 @@ import { useLanguage } from '@/lib/language';
 import NotificationBell from '@/components/NotificationBell';
 import Logo from '@/components/Logo';
 import LanguageSelector from '@/components/LanguageSelector';
-import CurrencySelector from '@/components/CurrencySelector';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -58,8 +57,8 @@ export default function Header() {
     <header className="bg-white border-b border-neutral-border sticky top-0 z-50">
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
-                    <Logo />
+          {/* Logo */}
+          <Logo />
 
           {/* Navegación desktop */}
           <nav className="hidden md:flex items-center gap-8">
@@ -80,7 +79,6 @@ export default function Header() {
           {/* Acciones desktop */}
           <div className="hidden md:flex items-center gap-4">
             <LanguageSelector />
-            <CurrencySelector />
 
             {user ? (
               <>
@@ -160,7 +158,6 @@ export default function Header() {
               <div className="border-t border-neutral-border pt-4 mt-2">
                 <div className="flex items-center gap-4 mb-4">
                   <LanguageSelector />
-                  <CurrencySelector />
                 </div>
 
                 {user ? (
