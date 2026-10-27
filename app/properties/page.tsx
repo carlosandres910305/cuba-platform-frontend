@@ -2,14 +2,24 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic'; // <-- IMPORTAMOS DYNAMIC
 import { Search, Home, Calendar as CalendarIcon } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import PropertyCard from '@/components/property/PropertyCard';
-import SearchMap from '@/components/property/SearchMap'; // <-- IMPORTAMOS EL NUEVO MAPA
 import { apiPublic } from '@/lib/api';
 import { useLanguage } from '@/lib/language';
 import { Property } from '@/types/property';
+
+// IMPORTACIÓN DINÁMICA DEL MAPA (Evita el error de window is not defined en SSR)
+const SearchMap = dynamic(() => import('@/components/property/SearchMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[500px] bg-neutral-soft rounded-2xl flex items-center justify-center border border-neutral-border">
+      <p className="text-neutral-muted">Cargando mapa...</p>
+    </div>
+  ),
+});
 
 // Componente interno que maneja la lógica
 function PropertiesContent() {
@@ -191,15 +201,11 @@ function PropertiesContent() {
             </p>
           </div>
         ) : (
-          /* DISEÑO DE DOS COLUMNAS: MAPA A LA IZQUIERDA, LISTADO A LA DERECHA */
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            {/* COLUMNA IZQUIERDA: MAPA (Sticky para que se quede fijo) */}
             <div className="lg:sticky lg:top-24 lg:h-[calc(100vh-8rem)]">
               <SearchMap properties={properties} />
             </div>
 
-            {/* COLUMNA DERECHA: LISTADO */}
             <div>
               <h2 className="text-xl font-serif font-bold mb-4">Casas disponibles</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6">
@@ -208,7 +214,6 @@ function PropertiesContent() {
                 ))}
               </div>
             </div>
-
           </div>
         )}
       </div>
