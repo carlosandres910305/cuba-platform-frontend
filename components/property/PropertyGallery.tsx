@@ -10,6 +10,9 @@ interface PropertyGalleryProps {
 
 export default function PropertyGallery({ media, propertyName }: PropertyGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // URL del backend para las imágenes
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   if (!media || media.length === 0) {
     return (
@@ -21,19 +24,24 @@ export default function PropertyGallery({ media, propertyName }: PropertyGallery
 
   const currentMedia = media[currentIndex];
 
+  // Función auxiliar para armar la URL
+  const getMediaUrl = (url: string) => {
+    return url.startsWith('/uploads') ? `${API_URL}${url}` : url;
+  };
+
   return (
     <div>
       {/* Foto principal */}
       <div className="aspect-[16/9] bg-neutral-soft rounded-2xl overflow-hidden mb-3">
         {currentMedia.type === 'video' ? (
           <video
-            src={`http://localhost:3001${currentMedia.url}`}
+            src={getMediaUrl(currentMedia.url)}
             controls
             className="w-full h-full object-cover"
           />
         ) : (
           <img
-            src={`http://localhost:3001${currentMedia.url}`}
+            src={getMediaUrl(currentMedia.url)}
             alt={`${propertyName} - Foto ${currentIndex + 1}`}
             className="w-full h-full object-cover"
           />
@@ -42,7 +50,7 @@ export default function PropertyGallery({ media, propertyName }: PropertyGallery
 
       {/* Miniaturas */}
       {media.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto pb-2">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {media.map((item, index) => (
             <button
               key={item.id}
@@ -59,7 +67,7 @@ export default function PropertyGallery({ media, propertyName }: PropertyGallery
                 </div>
               ) : (
                 <img
-                  src={`http://localhost:3001${item.url}`}
+                  src={getMediaUrl(item.url)}
                   alt={`Miniatura ${index + 1}`}
                   className="w-full h-full object-cover"
                 />

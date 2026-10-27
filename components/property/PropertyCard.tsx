@@ -27,6 +27,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
   // Primera foto
   const mainPhoto = property.media?.[0]?.url || null;
+  
+  // URL del backend para las imágenes
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   return (
     <Link
@@ -37,7 +40,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       <div className="aspect-[4/3] bg-neutral-soft relative overflow-hidden">
         {mainPhoto ? (
           <img
-            src={`http://localhost:3001${mainPhoto}`}
+            // CORREGIDO: Usamos API_URL para que funcione en Render
+            src={mainPhoto.startsWith('/uploads') ? `${API_URL}${mainPhoto}` : mainPhoto}
             alt={property.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -86,11 +90,12 @@ export default function PropertyCard({ property }: PropertyCardProps) {
 
         <div className="flex items-end justify-between">
           <div>
+            {/* Opcional: Mostrar totalPrice si existe (si viene de la búsqueda con fechas) */}
             <span className="text-lg font-bold text-primary">
-              ${property.rentalPrice}
+              ${property.totalPrice ? Number(property.totalPrice).toFixed(0) : property.rentalPrice}
             </span>
             <span className="text-sm text-neutral-muted ml-1">
-              {property.rentalCurrency}/noche
+              {property.rentalCurrency} {property.nights ? `total (${property.nights} noches)` : '/noche'}
             </span>
           </div>
         </div>
