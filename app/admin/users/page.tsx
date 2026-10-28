@@ -1,7 +1,7 @@
 // ============================================================
 // ADMIN: USUARIOS
 // ============================================================
-// Lista todos los usuarios y permite gestionar roles.
+// Lista todos los usuarios y permite gestionar roles, editarlos o eliminarlos.
 // ============================================================
 
 'use client';
@@ -12,11 +12,10 @@ import Link from 'next/link';
 import {
   Users,
   UserPlus,
-  Shield,
-  Mail,
   Edit,
   X,
   Check,
+  Trash2,
 } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
@@ -46,8 +45,10 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [newRole, setNewRole] = useState('');
+  
+  // Estados para Edición (Ahora guardamos un objeto completo)
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editForm, setEditForm] = useState({ name: '', email: '', role: '' });
 
   // Formulario de crear
   const [form, setForm] = useState({
@@ -100,17 +101,37 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleUpdateRole = async (userId: string) => {
+  // Nueva función para guardar la edición completa
+  const handleUpdateUser = async () => {
+    if (!editingUser) return;
+    
     try {
-      await apiFetch(`/users/${userId}/role`, {
+      await apiFetch(`/users/${editingUser.id}`, {
         method: 'PATCH',
-        body: JSON.stringify({ role: newRole }),
+        body: JSON.stringify({
+          name: editForm.name,
+          email: editForm.email,
+          role: editForm.role,
+        }),
       });
-      setEditingId(null);
-      setNewRole('');
+      setEditingUser(null);
       await fetchUsers();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Error al actualizar');
+    }
+  };
+
+  // Nueva función para eliminar usuario
+  const handleDeleteUser = async (id: string, name: string) => {
+    if (!confirm(`¿Estás seguro que deseas eliminar a ${name}? Esta acción no se puede deshacer.`)) return;
+
+    try {
+      await apiFetch(`/users/${id}`, {
+        method: 'DELETE',
+      });
+      await fetchUsers();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al eliminar. Puede que tenga reservas asociadas.');
     }
   };
 
@@ -192,15 +213,11 @@ export default function AdminUsersPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Contraseña
-                  </label>
+                  <label className="block text-sm font-medium mb-1">Contraseña</label>
                   <input
                     type="password"
                     value={form.password}
-                    onChange={(e) =>
-                      setForm({ ...form, password: e.target.value })
-                    }
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
                     required
                     minLength={6}
                     className="w-full px-4 py-2.5 border border-neutral-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
@@ -241,41 +258,48 @@ export default function AdminUsersPage() {
             <table className="w-full">
               <thead className="bg-neutral-soft">
                 <tr>
-                  <th className="text-left px-6 py-3 text-sm font-semibold">
-                    Usuario
-                  </th>
-                  <th className="text-left px-6 py-3 text-sm font-semibold">
-                    Email
-                  </th>
-                  <th className="text-left px-6 py-3 text-sm font-semibold">
-                    Rol
-                  </th>
-                  <th className="text-right px-6 py-3 text-sm font-semibold">
-                    Acciones
-                  </th>
+                  <th className="text-left px-6 py-3 text-sm font-semibold">Usuario</th>
+                  <th className="text-left px-6 py-3 text-sm font-semibold">Email</th>
+                  <th className="text-left px-6 py-3 text-sm font-semibold">Rol</th>
+                  <th className="text-right px-6 py-3 text-sm font-semibold">Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => {
                   const roleConfig = ROLE_LABELS[u.role] || ROLE_LABELS.guest;
-                  const isEditing = editingId === u.id;
+                  const isEditing = editingUser?.id === u.id;
 
                   return (
-                    <tr
-                      key={u.id}
-                      className="border-t border-neutral-border"
-                    >
+                    <tr key={u.id} className="border-t border-neutral-border">
                       <td className="px-6 py-4">
-                        <p className="font-semibold">{u.name || 'Sin nombre'}</p>
+                        {isEditing ? (
+                          <input
+                            type="text"
+                            value={editForm.name}
+                            onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                            className="w-full px-2 py-1 border rounded"
+                          />
+                        ) : (
+                          <p className="font-semibold">{u.name || 'Sin nombre'}</p>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-sm text-neutral-muted">
-                        {u.email}
+                        {isEditing ? (
+                          <input
+                            type="email"
+                            value={editForm.email}
+                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                            className="w-full px-2 py-1 border rounded"
+                          />
+                        ) : (
+                          u.email
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         {isEditing ? (
                           <select
-                            value={newRole}
-                            onChange={(e) => setNewRole(e.target.value)}
+                            value={editForm.role}
+                            onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
                             className="px-3 py-1.5 border border-neutral-border rounded-lg text-sm"
                           >
                             <option value="guest">Huésped</option>
@@ -284,39 +308,41 @@ export default function AdminUsersPage() {
                             <option value="auditor">Auditor</option>
                           </select>
                         ) : (
-                          <span
-                            className={`inline-block px-3 py-1 rounded-lg text-xs font-semibold ${roleConfig.color}`}
-                          >
+                          <span className={`inline-block px-3 py-1 rounded-lg text-xs font-semibold ${roleConfig.color}`}>
                             {roleConfig.label}
                           </span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
                         {isEditing ? (
-                          <div className="flex gap-2 justify-end">
-                            <button
-                              onClick={() => handleUpdateRole(u.id)}
-                              className="text-success hover:opacity-80"
-                            >
+                          <div className="flex gap-3 justify-end">
+                            <button onClick={handleUpdateUser} className="text-success hover:opacity-80">
                               <Check className="w-5 h-5" />
                             </button>
-                            <button
-                              onClick={() => setEditingId(null)}
-                              className="text-error hover:opacity-80"
-                            >
+                            <button onClick={() => setEditingUser(null)} className="text-error hover:opacity-80">
                               <X className="w-5 h-5" />
                             </button>
                           </div>
                         ) : (
-                          <button
-                            onClick={() => {
-                              setEditingId(u.id);
-                              setNewRole(u.role);
-                            }}
-                            className="text-neutral-muted hover:text-accent-coral"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
+                          <div className="flex gap-3 justify-end">
+                            <button
+                              onClick={() => {
+                                setEditingUser(u);
+                                setEditForm({ name: u.name, email: u.email, role: u.role });
+                              }}
+                              className="text-neutral-muted hover:text-accent-coral"
+                              title="Editar usuario"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(u.id, u.name)}
+                              className="text-neutral-muted hover:text-error"
+                              title="Eliminar usuario"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
                         )}
                       </td>
                     </tr>
