@@ -2,7 +2,7 @@
 // MEDIA UPLOADER
 // ============================================================
 // Permite subir fotos y videos a una casa.
-// Muestra la galería actual con opción de marcar portada.
+// Muestra la galería actual con opción de marcar portada y eliminar.
 // ============================================================
 
 'use client';
@@ -41,6 +41,9 @@ export default function MediaUploader({
   const [error, setError] = useState('');
   const [uploadType, setUploadType] = useState<'photo' | 'video'>('photo');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // URL del backend para las imágenes
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -203,7 +206,7 @@ export default function MediaUploader({
                   </div>
                 ) : (
                   <img
-                    src={`http://localhost:3001${item.url}`}
+                    src={item.url.startsWith('/uploads') ? `${API_URL}${item.url}` : item.url}
                     alt={`Media ${index}`}
                     className="aspect-square object-cover w-full"
                   />
